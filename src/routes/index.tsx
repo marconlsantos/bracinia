@@ -1,9 +1,9 @@
 import { component$ } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
-import { BraciniaMap } from '~/components/braciniamap/braciniamap';
+import { Map } from '~/components/map/map';
 
 export default component$(() => {
-  return <BraciniaMap />;
+  return <Map />;
 });
 
 export const head: DocumentHead = {
