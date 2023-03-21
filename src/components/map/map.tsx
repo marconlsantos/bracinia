@@ -10,13 +10,13 @@ export const Map = component$(() => {
     useOnWindow("load", $(() => {
         console.log('LOADED!!');
 
-        const map = L.map('map', {
-            scrollWheelZoom: false
-        });
+        const map = L.map('map').fitWorld();
 
         L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+
+        map.locate({ setView: true, maxZoom: 11 });
 
     }));
 
