@@ -24,18 +24,24 @@ interface OpenBreweryJson {
     created_at: string;
 }
 
-
 export class OpenBreweryRepository implements BreweryRepository {
-    readonly baseUrl: string = "https://api.openbrewerydb.org/breweries/";
+    readonly baseUrl: string = "https://api.openbrewerydb.org/breweries";
 
     async getRandom(): Promise<Brewery> {
-        const response = await fetch(new URL(`${this.baseUrl}random`));
+        const response = await fetch(new URL(`${this.baseUrl}/random`));
         const data = (await response.json()) as OpenBreweryJson[];
 
         if (data.length)
             return this.toBrewery(data[0] as unknown as OpenBreweryJson);
 
         return new Brewery('Unknown', BreweryType.closed);
+    }
+
+    async getNear(latitude: number, longitude: number): Promise<Brewery[]> {
+        const response = await fetch(new URL(`${this.baseUrl}?by_dist=${latitude},${longitude}&per_page=200`));
+        const data = (await response.json()) as OpenBreweryJson[];
+
+        return data.map(this.toBrewery);
     }
 
     toBrewery(json: OpenBreweryJson): Brewery {
