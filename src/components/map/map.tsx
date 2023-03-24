@@ -7,32 +7,38 @@ import type { BreweryRepository } from '~/domain/Repositories/BreweryRepository'
 import { OpenBreweryRepository } from '~/infrastructure/repositories/OpenBreweryRepository';
 import styles from './map.css?inline';
 
+// because Qwik will split these into different files, wee need to export them
 export const repository: BreweryRepository = new OpenBreweryRepository();
 
+export let map: L.Map;
 export let markerLayer: L.Layer;
 
 export const Map = component$(() => {
     useStylesScoped$(styles);
 
     useOnWindow("load", $(async () => {
-        const map = setupMap();
+        setupMap();
 
-        const seoul = { lat: 37.532600, lng: 127.024612 };
-
-        map.setView(seoul, 12);
-
-        // const breweries = await repository.getNear(seoul.lat, seoul.lng);
-
-        // placeMarkers(map, breweries);
-
-        //map.locate({ setView: true, maxZoom: 11 });
+        // try so set map to user location
+        setInitialPosition();
     }));
 
     return <div id='map'></div>;
 });
 
-function setupMap(): L.Map {
-    const map = L.map('map', {
+function setInitialPosition() {
+    map.locate({ setView: true, maxZoom: 12 });
+
+    try {
+        // will throw error if user does not allow location
+        map.getCenter();
+    } catch (e) {
+        map.setView({ lat: 51.47813730092184, lng: -0.000030705541477539806 }, 12);
+    }
+}
+
+function setupMap(): void {
+    map = L.map('map', {
         zoomControl: false,
         minZoom: 8,
     });
@@ -44,8 +50,6 @@ function setupMap(): L.Map {
     }).addTo(map);
 
     map.on('moveend', updateMapMarkers);
-
-    return map;
 }
 
 function updateMapMarkers(event: LeafletEvent): void {
