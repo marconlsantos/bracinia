@@ -19,7 +19,6 @@ export const Map = component$(() => {
     useOnWindow("load", $(async () => {
         setupMap();
 
-        // try so set map to user location
         setInitialPosition();
     }));
 
@@ -27,6 +26,7 @@ export const Map = component$(() => {
 });
 
 function setInitialPosition() {
+    // try so set map to user location
     map.locate({ setView: true, maxZoom: 12 });
 
     try {
