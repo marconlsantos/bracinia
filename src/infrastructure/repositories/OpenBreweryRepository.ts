@@ -1,7 +1,7 @@
 import { Brewery } from "~/domain/entities/Brewery";
 import type { BreweryRepository } from "~/domain/Repositories/BreweryRepository";
 import { Address } from "~/domain/valueobjects/Address";
-import { BreweryType } from "~/domain/valueobjects/BreweryType";
+import type { BreweryType } from "~/domain/valueobjects/BreweryType";
 import { Coordinates } from "~/domain/valueobjects/Coordinates";
 
 interface OpenBreweryJson {
@@ -34,7 +34,7 @@ export class OpenBreweryRepository implements BreweryRepository {
         if (data.length)
             return this.toBrewery(data[0] as unknown as OpenBreweryJson);
 
-        return new Brewery('Unknown', BreweryType.closed);
+        return new Brewery();
     }
 
     async getNear(latitude: number, longitude: number): Promise<Brewery[]> {
@@ -44,10 +44,20 @@ export class OpenBreweryRepository implements BreweryRepository {
         return data.map(this.toBrewery);
     }
 
+    async get(id: string): Promise<Brewery | undefined> {
+        const response = await fetch(new URL(`${this.baseUrl}/${id}`));
+
+        const data = (await response.json()) as OpenBreweryJson;
+
+        return this.toBrewery(data);
+    }
+
     toBrewery(json: OpenBreweryJson): Brewery {
-        const result = new Brewery(json.name, json.brewery_type as unknown as BreweryType);
+        const result = new Brewery();
 
         result.id = json.id;
+        result.name = json.name;
+        result.type = json.brewery_type as unknown as BreweryType;
 
         result.address = new Address({
             street: json.street,
