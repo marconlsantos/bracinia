@@ -26,3 +26,12 @@ test(`[OpenBreweryRepository] should get brewery`, async () => {
 
     expect(result).not.toBeUndefined();
 });
+
+test(`[OpenBreweryRepository] should get brewery list`, async () => {
+    let repository = new OpenBreweryRepository();
+
+    var result = await repository.query('dois corvo');
+
+    expect(result).not.toBeUndefined();
+    expect(result.length).greaterThan(0);
+});
